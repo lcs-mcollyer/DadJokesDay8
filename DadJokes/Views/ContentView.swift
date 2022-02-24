@@ -33,6 +33,18 @@ struct ContentView: View {
             
             Button(action: {
                 print("I've been pressed.")
+                
+                // Call Load new joke
+                // It must be called within a task structure
+                // So that it runs asynchronously
+                // NOTE: button's action normally expects synchronous code.
+                Task {
+                    await loadNewJoke()
+                }
+                
+                
+                
+                
             }, label: {
                 Text("Another one!")
             })
