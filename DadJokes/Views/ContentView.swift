@@ -56,13 +56,25 @@ struct ContentView: View {
         }
         // When the app opens, get a new joke from the web service
         .task {
+            // We "call" the loadnewjoke function to the computer
+            // To get a new joke.
+            // By typing "await" we are acknowledging tha we know thus
+            // Function may ber un at the saem time as other tasks in the app
+           await loadNewJoke()
             
+            //DEBUG
+            print("Have just attempted to load a new joke")
         }
         .navigationTitle("icanhazdadjoke?")
         .padding()
     }
     
     // MARK: Functions
+    // This function loads a new joke by talking to an endpoint on the web.
+    // We must mark the function as "Asnyc" so that it can be assynchronously which
+    // Means it may be run at hte saem time as other tasks.
+    // This is the function definition (it is where the computer "learns" waht
+    // It takes to load a new joke).
     func loadNewJoke() async {
      
         // Assemble the URL that points to the endpoint
