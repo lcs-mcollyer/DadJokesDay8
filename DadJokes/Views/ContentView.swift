@@ -63,10 +63,8 @@ struct ContentView: View {
     }
     
     // MARK: Functions
-    func loadNewJoke() {
+    func loadNewJoke() async {
      
-        
-        
         // Assemble the URL that points to the endpoint
         let url = URL(string: "https://icanhazdadjoke.com/")!
         
