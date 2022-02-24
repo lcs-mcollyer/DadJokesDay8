@@ -9,18 +9,19 @@ import SwiftUI
 
 struct ContentView: View {
     
-   
+    
     // MARK: Stored properties
     // Holds the joke that has just been recieved
     @State var currentJoke: DadJoke = DadJoke(id: "",
                                               joke: "Knock, knock...",
                                               status: 0)
     
-  
+    
     @State var favourites: [DadJoke] = [] // [] = empty list
     // Square brackets used to define a list
     
-    
+    // This will let us know wether the current joke has been added to the list
+    @State var currentJokeAddedToFavourites: Bool = false
     
     // MARK: Computed properties
     var body: some View {
@@ -38,10 +39,17 @@ struct ContentView: View {
             //
             Image(systemName: "heart.circle")
                 .font(.largeTitle)
+                .foregroundColor(currentJokeAddedToFavourites = true ? .red : .secondary)
                 .onTapGesture {
-                    // Add the current joke to the list
-                    favourites.append(currentJoke) // append = add
-                    // Same thing as manually adding to a list but the computer automatically adds it for us.
+                  // only when the joke does not already exist, add it
+                    if currentJokeAddedToFavourites == false {
+                        // Add the current joke to the list
+                        favourites.append(currentJoke) // append = add
+                        // Same thing as manually adding to a list but the computer automatically adds it for us.
+                        
+                        // Keep track that the joke is now a favourite.
+                        currentJokeAddedToFavourites = true
+                    }
                 }
             
             
@@ -64,6 +72,10 @@ struct ContentView: View {
             })
                 .buttonStyle(.bordered)
             
+            // need to check if button pressed = true or not
+            // once true turn red
+            
+            
             HStack {
                 Text("Favourites")
                     .bold()
@@ -71,8 +83,8 @@ struct ContentView: View {
                 Spacer()
             }
             
-           // Iterate (loop) over the list (array) of jokes
-           // Make each joke accessible using the name "currentJoke"
+            // Iterate (loop) over the list (array) of jokes
+            // Make each joke accessible using the name "currentJoke"
             // id: \.self  <- that tells the list structures to indentify each joke using the text of the joke itself
             List(favourites, id: \.self) { currentJoke in
                 Text(currentJoke.joke)
@@ -88,7 +100,7 @@ struct ContentView: View {
             // To get a new joke.
             // By typing "await" we are acknowledging tha we know thus
             // Function may ber un at the saem time as other tasks in the app
-           await loadNewJoke()
+            await loadNewJoke()
             
             //DEBUG
             print("Have just attempted to load a new joke")
@@ -104,7 +116,7 @@ struct ContentView: View {
     // This is the function definition (it is where the computer "learns" waht
     // It takes to load a new joke).
     func loadNewJoke() async {
-     
+        
         // Assemble the URL that points to the endpoint
         let url = URL(string: "https://icanhazdadjoke.com/")!
         
@@ -131,9 +143,13 @@ struct ContentView: View {
             //                                         |
             //                                         V
             currentJoke = try JSONDecoder().decode(DadJoke.self, from: data)
-            
             // catch is almost as if it fails this is what will happen. Like a return style code.
-            
+           
+            // if we got here, a new joke has been set (line 140).
+            // so we must rest the flag to track wether that current joke is
+            // a favourite
+            currentJokeAddedToFavourites = false
+             
         } catch {
             print("Could not retrieve or decode the JSON from endpoint.")
             // Print the contents of the "error" constant that the do-catch block
